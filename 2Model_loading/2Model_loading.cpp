@@ -75,10 +75,12 @@ int main( void )
 
 	// Load the texture
 	GLuint Texture = loadBMP_custom("MarsMap.bmp");
-	GLuint Texture2 = loadBMP_custom("earth.bmp");
+	GLuint Texture2 = loadBMP_custom("Planetn.bmp");
 	GLuint Texture3 = loadBMP_custom("mercury.bmp");
 	GLuint Texture4 = loadBMP_custom("venus.bmp");
-	GLuint Texture5 = loadBMP_custom("saturn.bmp");
+	GLuint Texture5 = loadBMP_custom("Planett.bmp");
+	GLuint Texture01 = loadBMP_custom("mercury.bmp");
+	GLuint Texture02 = loadBMP_custom("astroid.bmp");
 	
 	// Get a handle for our "myTextureSampler" uniform
 	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
@@ -87,7 +89,7 @@ int main( void )
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals; // Won't be used at the moment.
-	bool res = loadOBJ("Mars.obj", vertices, uvs, normals);
+	bool res = loadOBJ("Planet.obj", vertices, uvs, normals);
 
 	// Load it into a VBO
 
@@ -100,6 +102,47 @@ int main( void )
 	glGenBuffers(1, &uvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	std::vector<glm::vec3> vertices2;
+	std::vector<glm::vec2> uvs2;
+	std::vector<glm::vec3> normals2; // Won't be used at the moment.
+	bool res2 = loadOBJ("meteor.obj", vertices2, uvs2, normals2);
+
+	// Load it into a VBO
+
+	GLuint vertexbuffer2;
+	glGenBuffers(1, &vertexbuffer2);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
+	glBufferData(GL_ARRAY_BUFFER, vertices2.size() * sizeof(glm::vec3), &vertices2[0], GL_STATIC_DRAW);
+
+	GLuint uvbuffer2;
+	glGenBuffers(1, &uvbuffer2);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer2);
+	glBufferData(GL_ARRAY_BUFFER, uvs2.size() * sizeof(glm::vec2), &uvs2[0], GL_STATIC_DRAW);
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	std::vector<glm::vec3> vertices3;
+	std::vector<glm::vec2> uvs3;
+	std::vector<glm::vec3> normals3; // Won't be used at the moment.
+	bool res3 = loadOBJ("astroid.obj", vertices3, uvs3, normals3);
+
+	// Load it into a VBO
+
+	GLuint vertexbuffer3;
+	glGenBuffers(1, &vertexbuffer3);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer3);
+	glBufferData(GL_ARRAY_BUFFER, vertices3.size() * sizeof(glm::vec3), &vertices3[0], GL_STATIC_DRAW);
+
+	GLuint uvbuffer3;
+	glGenBuffers(1, &uvbuffer3);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer3);
+	glBufferData(GL_ARRAY_BUFFER, uvs3.size() * sizeof(glm::vec2), &uvs3[0], GL_STATIC_DRAW);
+
+
+
 
 	do{
 
@@ -203,6 +246,77 @@ int main( void )
 
 
 
+		///////////meteors
+		computeMatricesFromInputs();
+		glm::mat4 ProjectionMatrix01 = getProjectionMatrix();
+		glm::mat4 ViewMatrix01 = getViewMatrix();
+		glm::mat4 ModelMatrix01 = translate(mat4(), vec3(1.0f,-5.0f, -3.0f));
+		glm::mat4 MVP01 = ProjectionMatrix01 * ViewMatrix01 * ModelMatrix01;
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP01[0][0]);
+		glActiveTexture(GL_TEXTURE7);
+		glBindTexture(GL_TEXTURE_2D, Texture01);
+		glUniform1i(TextureID, 7);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
+		glVertexAttribPointer(
+			vertexPosition_modelspaceID,  // The attribute we want to configure
+			3,                            // size
+			GL_FLOAT,                     // type
+			GL_FALSE,                     // normalized?
+			0,                            // stride
+			(void*)0                      // array buffer offset
+			);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer2);
+		glVertexAttribPointer(
+			vertexUVID,                   // The attribute we want to configure
+			2,                            // size : U+V => 2
+			GL_FLOAT,                     // type
+			GL_FALSE,                     // normalized?
+			0,                            // stride
+			(void*)0                      // array buffer offset
+			);
+		// Draw the triangles !
+		glDrawArrays(GL_TRIANGLES, 0, vertices2.size());
+
+
+
+
+
+		///////////astroids
+		computeMatricesFromInputs();
+		glm::mat4 ProjectionMatrix02 = getProjectionMatrix();
+		glm::mat4 ViewMatrix02 = getViewMatrix();
+		glm::mat4 ModelMatrix02 = translate(mat4(), vec3(0.0f, 0.0f, -3.0f));
+		glm::mat4 MVP02 = ProjectionMatrix02 * ViewMatrix02 * ModelMatrix02;
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP02[0][0]);
+		glActiveTexture(GL_TEXTURE8);
+		glBindTexture(GL_TEXTURE_2D, Texture02);
+		glUniform1i(TextureID, 8);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer3);
+		glVertexAttribPointer(
+			vertexPosition_modelspaceID,  // The attribute we want to configure
+			3,                            // size
+			GL_FLOAT,                     // type
+			GL_FALSE,                     // normalized?
+			0,                            // stride
+			(void*)0                      // array buffer offset
+			);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer3);
+		glVertexAttribPointer(
+			vertexUVID,                   // The attribute we want to configure
+			2,                            // size : U+V => 2
+			GL_FLOAT,                     // type
+			GL_FALSE,                     // normalized?
+			0,                            // stride
+			(void*)0                      // array buffer offset
+			);
+		// Draw the triangles !
+		glDrawArrays(GL_TRIANGLES, 0, vertices3.size());
+
+
+
+
 
 
 
@@ -220,6 +334,10 @@ int main( void )
 	// Cleanup VBO and shader
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
+
+	glDeleteBuffers(1, &vertexbuffer2);
+	glDeleteBuffers(1, &uvbuffer2);
+
 	glDeleteProgram(programID);
 	glDeleteTextures(1, &TextureID);
 
