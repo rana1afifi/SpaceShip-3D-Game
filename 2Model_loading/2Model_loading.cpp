@@ -83,9 +83,10 @@ int main( void )
 	GLuint EarthTexture = loadBMP_custom("earth.bmp");
 	GLuint SceneTexture = loadBMP_custom("skysphere.bmp");
 	GLuint SpaceshipTexture = loadBMP_custom("Diffuse.bmp");
-	GLuint BlackholeTexture = loadBMP_custom("Blackhole.bmp");
+	GLuint BlackholeTexture = loadBMP_custom("blackhole3.bmp");
 	GLuint MeteorTexture = loadBMP_custom("mercury.bmp");
 	GLuint AstroidTexture = loadBMP_custom("astroid.bmp");
+	GLuint LightTunnelTexture = loadBMP_custom("white.bmp");
 
 	// Get a handle for our "myTextureSampler" uniform
 	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
@@ -111,9 +112,14 @@ int main( void )
 	std::vector<glm::vec3> AstroidVertices;
 	std::vector<glm::vec2> AstroidUvs;
 	std::vector<glm::vec3> AstroidNormals; // Won't be used at the moment.
+
+	std::vector<glm::vec3> LTunnelVertices;
+	std::vector<glm::vec2> LTunnelUvs;
+	std::vector<glm::vec3> LTunnelNormals; // Won't be used at the moment.
+
 	
 	/*Load Object and its Buffer*/
-
+	
 	bool scene = loadOBJ("skysphere.obj", vertices, uvs, normals);
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
@@ -134,7 +140,7 @@ int main( void )
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer1);
 	glBufferData(GL_ARRAY_BUFFER, SpaceShipuvs.size() * sizeof(glm::vec2), &SpaceShipuvs[0], GL_STATIC_DRAW);
 
-	bool Blackhole = loadOBJ("skysphere.obj", BlackHoleVertices , BlackHoleUvs, BlackHoleNormals);
+	bool Blackhole = loadOBJ("blackhole2.obj", BlackHoleVertices , BlackHoleUvs, BlackHoleNormals);
 	GLuint BHvertexbuffer;
 	glGenBuffers(1, &BHvertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, BHvertexbuffer);
@@ -166,11 +172,25 @@ int main( void )
 	glBindBuffer(GL_ARRAY_BUFFER, Astroiduvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, AstroidUvs.size() * sizeof(glm::vec2), &AstroidUvs[0], GL_STATIC_DRAW);
 
+
+
+	bool LightTunnel = loadOBJ("toruses1.obj", LTunnelVertices, LTunnelUvs, LTunnelNormals);
+	GLuint LTunnelvertexbuffer;
+	glGenBuffers(1, &LTunnelvertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, LTunnelvertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, LTunnelVertices.size() * sizeof(glm::vec3), &LTunnelVertices[0], GL_STATIC_DRAW);
+	GLuint LTunnelUvbuffer;
+	glGenBuffers(1, &LTunnelUvbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, LTunnelUvbuffer);
+	glBufferData(GL_ARRAY_BUFFER, LTunnelUvs.size() * sizeof(glm::vec2), &LTunnelUvs[0], GL_STATIC_DRAW);
+	
+
 	// For speed computation
 	double lastTime = glfwGetTime();
 	double lastFrameTime = lastTime;
 	int nbFrames = 0;
 	float orientation = 0.0f;
+	float BHorientation =  3.14159f / 2.0f ;
 	glm::mat4 PlanetsScaling = scale(mat4(), vec3(0.5f, 0.5f, 0.5f));
 		
 	do
@@ -193,7 +213,7 @@ int main( void )
 			lastTime += 1.0;
 		}
 		orientation += 3.14159f / 6.0f * deltaTime;
-
+		
 		glm::mat4 PlanetsRotation = eulerAngleY(orientation);
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
@@ -357,10 +377,14 @@ int main( void )
 			(void*)0                      // array buffer offset
 		);
 		computeMatricesFromInputs();
-		glm::mat4 BlackholeTranslation = translate(mat4(), vec3(2.0f , 2.0f , 0.0f));
-		glm::mat4 BlackholeZRotation = eulerAngleZ(orientation);
-		glm::mat4 BHModel = BlackholeTranslation*BlackholeZRotation;
-		glm::mat4 BHMVP = ProjectionMatrix * ViewMatrix *BHModel;
+		
+		glm::mat4 BlackholeTranslation = translate(mat4(), vec3(-1.0f , 0.0f , 0.0f));
+		glm::mat4 BlackholeScaling = scale(mat4(), vec3(0.1, 0.1, 0.1));
+		glm::mat4 BlackholeXRotation = eulerAngleX(BHorientation);
+		glm::mat4 BlackholeYRotation = eulerAngleY(orientation*37);
+		glm::mat4 BHModel=BlackholeTranslation*BlackholeXRotation*BlackholeYRotation*BlackholeScaling;// = PlanetsRotation;
+		glm::mat4 BHMVP = ProjectionMatrix * ViewMatrix *BHModel; 
+;
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &BHMVP[0][0]);
 		glActiveTexture(GL_TEXTURE8);
 		glBindTexture(GL_TEXTURE_2D, BlackholeTexture);
@@ -432,9 +456,37 @@ int main( void )
 		);
 		glDrawArrays(GL_TRIANGLES, 0, AstroidVertices.size());
 
+		computeMatricesFromInputs();
+		glm::mat4 LTunnelTranslation = translate(mat4(), vec3(-7.0f, 7.0f, -7.0f));
+		glm::mat4 LTunnelModel = LTunnelTranslation;
+		glm::mat4 LTunnelMVP = ProjectionMatrix * ViewMatrix *LTunnelModel;
+		glActiveTexture(GL_TEXTURE13);
+		glBindTexture(GL_TEXTURE_2D, LightTunnelTexture);
+		glUniform1i(TextureID, 13);
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &LTunnelMVP[0][0]);
 
-
-
+		glBindBuffer(GL_ARRAY_BUFFER, LTunnelvertexbuffer);
+		glVertexAttribPointer
+			(
+				vertexPosition_modelspaceID,  // The attribute we want to configure
+				3,                            // size
+				GL_FLOAT,                     // type
+				GL_FALSE,                     // normalized?
+				0,                            // stride
+				(void*)0                      // array buffer offset
+				);
+		glBindBuffer(GL_ARRAY_BUFFER, LTunnelUvbuffer);
+		glVertexAttribPointer
+			(
+				vertexUVID,                   // The attribute we want to configure
+				2,                            // size : U+V => 2
+				GL_FLOAT,                     // type
+				GL_FALSE,                     // normalized?
+				0,                            // stride
+				(void*)0                      // array buffer offset
+				);
+		glDrawArrays(GL_TRIANGLES, 0, LTunnelVertices.size());
+		
 
 
 		glDisableVertexAttribArray(vertexPosition_modelspaceID);
