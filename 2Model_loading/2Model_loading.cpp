@@ -86,7 +86,7 @@ int main( void )
     GLuint BlackholeTexture = loadBMP_custom("FittedBH.bmp");
 	GLuint MeteorTexture = loadBMP_custom("mercury.bmp");
 	GLuint AstroidTexture = loadBMP_custom("astroid.bmp");
-    GLuint LightTunnelTexture = loadBMP_custom("Tunnel6.bmp");
+    GLuint LightTunnelTexture = loadBMP_custom("Tunnel.bmp");
 
 	// Get a handle for our "myTextureSampler" uniform
 	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
