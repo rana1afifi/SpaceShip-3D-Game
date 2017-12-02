@@ -83,13 +83,12 @@ int main( void )
 	GLuint EarthTexture = loadBMP_custom("earth.bmp");
 	GLuint SceneTexture = loadBMP_custom("skysphere.bmp");
 	GLuint SpaceshipTexture = loadBMP_custom("Diffuse.bmp");
-  GLuint BlackholeTexture = loadBMP_custom("FittedBH.bmp");
+	GLuint BlackholeTexture = loadBMP_custom("FittedBH.bmp");
 	GLuint MeteorTexture = loadBMP_custom("mercury.bmp");
 	GLuint AstroidTexture = loadBMP_custom("astroid.bmp");
-	GLuint LightTunnelTexture = loadBMP_custom("white.bmp");
 	GLuint FuelTexture = loadBMP_custom("redbmp.bmp");
-  GLuint GiftTexture = loadBMP_custom("wrap1.bmp");
-  GLuint LightTunnelTexture = loadBMP_custom("Tunnel.bmp");
+	GLuint GiftTexture = loadBMP_custom("wrap1.bmp");
+	GLuint LightTunnelTexture = loadBMP_custom("Tunnel.bmp");
 
 	// Get a handle for our "myTextureSampler" uniform
 	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
@@ -121,14 +120,13 @@ int main( void )
 	std::vector<glm::vec3> LTunnelNormals; // Won't be used at the moment.
 	
 	std::vector<glm::vec3> FuelVertices;
-    	std::vector<glm::vec2> FuelUvs;
-    	std::vector<glm::vec3> FuelNormals;
+   	std::vector<glm::vec2> FuelUvs;
+   	std::vector<glm::vec3> FuelNormals;
 
-    	std::vector<glm::vec3> GiftVertices;
-    	std::vector<glm::vec2> GiftUvs;
-    	std::vector<glm::vec3> GiftNormals;
+   	std::vector<glm::vec3> GiftVertices;
+   	std::vector<glm::vec2> GiftUvs;
+   	std::vector<glm::vec3> GiftNormals;
 
-	
 	/*Load Object and its Buffer*/
 	
 	bool scene = loadOBJ("skysphere.obj", vertices, uvs, normals);
@@ -161,7 +159,6 @@ int main( void )
 	glBindBuffer(GL_ARRAY_BUFFER, BHuvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, BlackHoleUvs.size() * sizeof(glm::vec2), &BlackHoleUvs[0], GL_STATIC_DRAW);
 
-
 	bool Meteor = loadOBJ("meteor.obj", MeteorVertices, MeteorUvs, MeteorNormals);
 	GLuint Meteorvertexbuffer;
 	glGenBuffers(1, &Meteorvertexbuffer);
@@ -172,7 +169,6 @@ int main( void )
 	glBindBuffer(GL_ARRAY_BUFFER, Meteoruvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, MeteorUvs.size() * sizeof(glm::vec2), &MeteorUvs[0], GL_STATIC_DRAW);
 
-
 	bool Astroid = loadOBJ("astroid.obj", AstroidVertices, AstroidUvs, AstroidNormals);
 	GLuint Astroidvertexbuffer;
 	glGenBuffers(1, &Astroidvertexbuffer);
@@ -182,9 +178,6 @@ int main( void )
 	glGenBuffers(1, &Astroiduvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, Astroiduvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, AstroidUvs.size() * sizeof(glm::vec2), &AstroidUvs[0], GL_STATIC_DRAW);
-
-
-
 
 	bool LightTunnel = loadOBJ("toruses1.obj", LTunnelVertices, LTunnelUvs, LTunnelNormals);
 	GLuint LTunnelvertexbuffer;
@@ -215,16 +208,6 @@ int main( void )
  	glGenBuffers(1, &Giftuvbuffer);
  	glBindBuffer(GL_ARRAY_BUFFER, Giftuvbuffer);
  	glBufferData(GL_ARRAY_BUFFER, GiftUvs.size() * sizeof(glm::vec2), &GiftUvs[0], GL_STATIC_DRAW);
-
-  bool LightTunnel = loadOBJ("toruses.obj", LTunnelVertices, LTunnelUvs, LTunnelNormals);
-  GLuint LTunnelvertexbuffer;
-  glGenBuffers(1, &LTunnelvertexbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, LTunnelvertexbuffer);
-  glBufferData(GL_ARRAY_BUFFER, LTunnelVertices.size() * sizeof(glm::vec3), &LTunnelVertices[0], GL_STATIC_DRAW);
-  GLuint LTunnelUvbuffer;
-  glGenBuffers(1, &LTunnelUvbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, LTunnelUvbuffer);
-  glBufferData(GL_ARRAY_BUFFER, LTunnelUvs.size() * sizeof(glm::vec2), &LTunnelUvs[0], GL_STATIC_DRAW);
 
 	// For speed computation
 	double lastTime = glfwGetTime();
@@ -502,34 +485,33 @@ int main( void )
         /*Light Tunnel*/
 		computeMatricesFromInputs();
         glm::mat4 LTunnelTranslation = translate(mat4(), vec3(0.0f, -0.2f, 0.0f));
-       // glm::mat4 LTunnelScaling = scale(mat4(), vec3(0.2, 0.2, 0.2));
+       //glm::mat4 LTunnelScaling = scale(mat4(), vec3(0.2, 0.2, 0.2));
         glm::mat4 LTunnelModel = LTunnelTranslation*BlackholeXRotation*BlackholeScaling;
 		glm::mat4 LTunnelMVP = ProjectionMatrix * ViewMatrix *LTunnelModel;
 		glActiveTexture(GL_TEXTURE13);
         glBindTexture(GL_TEXTURE_2D, LightTunnelTexture);
 		glUniform1i(TextureID, 13);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &LTunnelMVP[0][0]);
-
         glBindBuffer(GL_ARRAY_BUFFER, BHvertexbuffer);
 		glVertexAttribPointer
-			(
-				vertexPosition_modelspaceID,  // The attribute we want to configure
-				3,                            // size
-				GL_FLOAT,                     // type
-				GL_FALSE,                     // normalized?
-				0,                            // stride
-				(void*)0                      // array buffer offset
-				);
+		(
+			vertexPosition_modelspaceID,  // The attribute we want to configure
+			3,                            // size
+			GL_FLOAT,                     // type
+			GL_FALSE,                     // normalized?
+			0,                            // stride
+			(void*)0                      // array buffer offset
+		);
         glBindBuffer(GL_ARRAY_BUFFER, BHuvbuffer);
 		glVertexAttribPointer
-			(
-				vertexUVID,                   // The attribute we want to configure
-				2,                            // size : U+V => 2
-				GL_FLOAT,                     // type
-				GL_FALSE,                     // normalized?
-				0,                            // stride
-				(void*)0                      // array buffer offset
-				);
+		(
+			vertexUVID,                   // The attribute we want to configure
+			2,                            // size : U+V => 2
+			GL_FLOAT,                     // type
+			GL_FALSE,                     // normalized?
+			0,                            // stride
+			(void*)0                      // array buffer offset
+		);
 		glDrawArrays(GL_TRIANGLES, 0, LTunnelVertices.size());
 		
 
@@ -539,74 +521,72 @@ int main( void )
 		glm::mat4 FuelRotationMatrix = eulerAngleYXZ(orientation_sin, 0.0f, 0.0f);//yaw, pitch and roll. Measured in radians
 		glm::mat4 FuelScalingMatrix = scale(mat4(), vec3(0.2f, 0.2f, 0.2f));
 		glm::mat4 FuelModel =  FuelTranslation * FuelRotationMatrix * FuelScalingMatrix;
-		glm::mat4 FuelMVP        = ProjectionMatrix * ViewMatrix * FuelModel;
-
+		glm::mat4 FuelMVP = ProjectionMatrix * ViewMatrix * FuelModel;
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &FuelMVP[0][0]);
-		glActiveTexture(GL_TEXTURE13);
+		glActiveTexture(GL_TEXTURE14);
 		glBindTexture(GL_TEXTURE_2D, FuelTexture);
-		glUniform1i(TextureID, 13);
+		glUniform1i(TextureID, 14);
 		glBindBuffer(GL_ARRAY_BUFFER, Fuelvertexbuffer);
 		glVertexAttribPointer
-			(
-			    vertexPosition_modelspaceID,  // The attribute we want to configure
-			    3,                            // size
-			    GL_FLOAT,                     // type
-			    GL_FALSE,                     // normalized?
-			    0,                            // stride
-			    (void*)0                      // array buffer offset
-			    );
+		(
+		    vertexPosition_modelspaceID,  // The attribute we want to configure
+		    3,                            // size
+		    GL_FLOAT,                     // type
+		    GL_FALSE,                     // normalized?
+		    0,                            // stride
+		    (void*)0                      // array buffer offset
+		);
 		glBindBuffer(GL_ARRAY_BUFFER, Fueluvbuffer);
 		glVertexAttribPointer
-			(
-			    vertexUVID,                   // The attribute we want to configure
-			    2,                            // size : U+V => 2
-			    GL_FLOAT,                     // type
-			    GL_FALSE,                     // normalized?
-			    0,                            // stride
-			    (void*)0                      // array buffer offset
-			    );
+		(
+		    vertexUVID,                   // The attribute we want to configure
+		    2,                            // size : U+V => 2
+		    GL_FLOAT,                     // type
+		    GL_FALSE,                     // normalized?
+		    0,                            // stride
+		    (void*)0                      // array buffer offset
+		  );
 		glDrawArrays(GL_TRIANGLES, 0, FuelVertices.size());
 
 
 		/* Gift Box*/
 		computeMatricesFromInputs();
 		glm::mat4 GiftTranslation = translate(mat4(), vec3(5.0f, orientation_sin, 7.0f));
-		glm::mat4 GiftRotationMatrix = eulerAngleYXZ(orientation_sin, 0.0f, 0.0f);//yaw, pitch and roll. Measured in radians
+		glm::mat4 GiftRotationMatrix = eulerAngleYXZ(orientation_sin, 0.0f, 0.0f);
 		glm::mat4 GiftScalingMatrix = scale(mat4(), vec3(0.2f, 0.2f, 0.2f));
 		glm::mat4 GiftModel =  GiftTranslation * GiftRotationMatrix * GiftScalingMatrix;
-		glm::mat4 GiftMVP        = ProjectionMatrix * ViewMatrix * GiftModel;
-
+		glm::mat4 GiftMVP = ProjectionMatrix * ViewMatrix * GiftModel;
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &GiftMVP[0][0]);
-		glActiveTexture(GL_TEXTURE14);
+		glActiveTexture(GL_TEXTURE15);
 		glBindTexture(GL_TEXTURE_2D, GiftTexture);
-		glUniform1i(TextureID, 14);
+		glUniform1i(TextureID, 15);
 		glBindBuffer(GL_ARRAY_BUFFER, Giftvertexbuffer);
 		glVertexAttribPointer
-			(
-			    vertexPosition_modelspaceID,  // The attribute we want to configure
-			    3,                            // size
-			    GL_FLOAT,                     // type
-			    GL_FALSE,                     // normalized?
-			    0,                            // stride
-			    (void*)0                      // array buffer offset
-			    );
+		(
+		    vertexPosition_modelspaceID,  // The attribute we want to configure
+		    3,                            // size
+		    GL_FLOAT,                     // type
+		    GL_FALSE,                     // normalized?
+		    0,                            // stride
+		    (void*)0                      // array buffer offset
+		);
 		glBindBuffer(GL_ARRAY_BUFFER, Giftuvbuffer);
 		glVertexAttribPointer
-			(
-			    vertexUVID,                   // The attribute we want to configure
-			    2,                            // size : U+V => 2
-			    GL_FLOAT,                     // type
-			    GL_FALSE,                     // normalized?
-			    0,                            // stride
-			    (void*)0                      // array buffer offset
-			    );
-       		glDrawArrays(GL_TRIANGLES, 0, GiftVertices.size());
+		(
+		    vertexUVID,                   // The attribute we want to configure
+		    2,                            // size : U+V => 2
+		    GL_FLOAT,                     // type
+		    GL_FALSE,                     // normalized?
+		    0,                            // stride
+		    (void*)0                      // array buffer offset
+		);
+       	glDrawArrays(GL_TRIANGLES, 0, GiftVertices.size());
 		
+
+
 		glDisableVertexAttribArray(vertexPosition_modelspaceID);
 		glDisableVertexAttribArray(vertexUVID);
-
-		// Swap buffers
-		glfwSwapBuffers();
+		glfwSwapBuffers();	//Swap buffers
 
 	}
 
